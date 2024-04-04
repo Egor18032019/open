@@ -5,6 +5,8 @@ import com.openschool.training.annotation.TrackTime;
 import com.openschool.training.models.Pokemon;
 import com.openschool.training.models.PokemonsModel;
 import com.openschool.training.store.GoodRepositoryImpl;
+import com.openschool.training.store.PokemonEntity;
+import com.openschool.training.store.PokemonsRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.scheduling.annotation.Async;
@@ -21,9 +23,11 @@ import java.util.concurrent.CompletableFuture;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GoodService implements GoodServiceCommon {
     GoodRepositoryImpl goodRepository;
+    static PokemonsRepository pokemonsRepository;
 
-    public GoodService(GoodRepositoryImpl goodRepository) {
+    public GoodService(GoodRepositoryImpl goodRepository, PokemonsRepository pokemonsRepository) {
         this.goodRepository = goodRepository;
+        GoodService.pokemonsRepository = pokemonsRepository;
     }
 
     @Override
@@ -39,7 +43,7 @@ public class GoodService implements GoodServiceCommon {
 
     @Override
     @Async
-    @TrackAsyncTime(className="getAllPokemons")      //todo получать имя метода отдельно
+    @TrackAsyncTime(className = "getAllPokemons")      //todo получать имя метода отдельно
     public CompletableFuture<PokemonsModel> getAllPokemons(int limit, int offset) {
         long id = Thread.currentThread().getId();
         System.out.println("getAllPokemons. Thread id is:  " + id);
@@ -52,6 +56,18 @@ public class GoodService implements GoodServiceCommon {
         return CompletableFuture.completedFuture(results);
     }
 
+    public static void save(CompletableFuture<PokemonsModel> results) {
+        results.thenApplyAsync((result -> {
+            // Обработка результата
+            for (Pokemon point : result.getPokemonArrayList()) {
+                if (pokemonsRepository.findByName(point.getName()) != null) {
+                    pokemonsRepository.save(new PokemonEntity(point.getName(), point.getUrl()));
+                }
+            }
+            return result;
+        }));
+
+    }
 
     @Override
     public Map<String, List<Long>> getMeExecutionTimeAllMethods() {

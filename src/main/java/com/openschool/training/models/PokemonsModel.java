@@ -3,6 +3,7 @@ package com.openschool.training.models;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Класс описывает полученного лимитированного списка покемонов
@@ -16,5 +17,5 @@ public class PokemonsModel {
     int count;
     String next;
     String previous;
-    ArrayList<Pokemon> results;
+    List<Pokemon> pokemonArrayList;
 }
