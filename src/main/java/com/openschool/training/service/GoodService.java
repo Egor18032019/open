@@ -1,5 +1,7 @@
 package com.openschool.training.service;
 
+import com.openschool.training.annotation.TrackAsyncTime;
+import com.openschool.training.annotation.TrackTime;
 import com.openschool.training.models.Pokemon;
 import com.openschool.training.models.PokemonsModel;
 import com.openschool.training.store.GoodRepositoryImpl;
@@ -25,22 +27,20 @@ public class GoodService implements GoodServiceCommon {
     }
 
     @Override
+    @TrackTime(className = "getPokemonByName") //todo переделать получение имени
     public Pokemon getPokemonByName(String name) throws InterruptedException {
-        long startTime = System.currentTimeMillis();
         long id = Thread.currentThread().getId();
         System.out.println("getPokemonByName . Thread id is:  " + id);
         Thread.sleep(11111);
         Pokemon pokemon = goodRepository.getPokemonByName(name);
-        //todo получать имя метода отдельно
-        long endTime = System.currentTimeMillis();
-        goodRepository.add("getUserByEmail", endTime - startTime);
+
         return pokemon;
     }
 
     @Override
     @Async
+    @TrackAsyncTime(className="getAllPokemons")      //todo получать имя метода отдельно
     public CompletableFuture<PokemonsModel> getAllPokemons(int limit, int offset) {
-        long startTime = System.currentTimeMillis();
         long id = Thread.currentThread().getId();
         System.out.println("getAllPokemons. Thread id is:  " + id);
         if (offset > limit) offset = 0;
@@ -48,8 +48,7 @@ public class GoodService implements GoodServiceCommon {
         RestTemplate restTemplate = new RestTemplate();
         //todo поправить
         PokemonsModel results = restTemplate.getForObject("https://pokeapi.co/api/v2/pokemon?limit=" + limit + "&offset=" + offset, PokemonsModel.class);
-        long endTime = System.currentTimeMillis();
-        goodRepository.add("getAllPokemons", endTime - startTime);
+
         return CompletableFuture.completedFuture(results);
     }
 
