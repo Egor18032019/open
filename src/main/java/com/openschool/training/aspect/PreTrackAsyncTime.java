@@ -21,10 +21,6 @@ public class PreTrackAsyncTime {
         this.goodRepository = goodRepository;
     }
 
-    //    @Pointcut("execution(@com.openschool.training.annotation.TrackAsyncTime public PokemonsModel get*(..)) ")
-//    @Pointcut("execution(* (@com.openschool.training.annotation.TrackAsyncTime *).*(..))")
-//    @Pointcut("execution(* com.openschool.training.annotation.TrackAsyncTime.*(..))")
-//    @Pointcut("@annotation(trackAsyncTime)")
     @Pointcut("@annotation(com.openschool.training.annotation.TrackAsyncTime)")
     public void asyncRunnerPointcut() {
     }
@@ -50,18 +46,16 @@ public class PreTrackAsyncTime {
 
     protected Object trackTime(ProceedingJoinPoint joinPoint) throws Throwable {
         long id = Thread.currentThread().getId();
-        System.out.println("getAllPokemons. Thread id is:  " + id);
         long startTime = System.currentTimeMillis();  System.out.println("перехват !!");
-
         String methodName = joinPoint.getSignature().getName();
 
         log.info("Асинхронный запуск с анотацией TrackAsyncTime.");
 
         Object o = joinPoint.proceed();
-
         long endTime = System.currentTimeMillis();
 
         log.info("Метод {} в потоке {} выполнился за {} мс ", methodName,id, endTime - startTime);
+
         goodRepository.add(methodName, endTime - startTime);
         return o;
     }

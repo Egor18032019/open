@@ -1,5 +1,6 @@
 package com.openschool.training.models;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 /**
@@ -10,6 +11,7 @@ import lombok.*;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(description = "отдает Имя покемона и url который ведет на страницу с полным описание этого покемона.")
 public class Pokemon {
     /**
      * Имя покемона

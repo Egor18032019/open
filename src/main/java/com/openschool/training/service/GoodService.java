@@ -27,11 +27,10 @@ public class GoodService implements GoodServiceCommon {
     }
 
     @Override
-    @TrackTime(className = "getPokemonByName") //todo переделать получение имени
-    public Pokemon getPokemonByName(String name) throws InterruptedException {
+    @TrackTime(className = "getPokemonByName")
+    public Pokemon getPokemonByName(String name) {
         long id = Thread.currentThread().getId();
         log.info("Метод getPokemonByName в потоке {} запустился.", id);
-        Thread.sleep(1111);
         Pokemon pokemon = goodRepository.getPokemonByName(name);
 
         return pokemon;
