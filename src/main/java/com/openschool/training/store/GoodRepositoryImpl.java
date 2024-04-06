@@ -1,7 +1,6 @@
 package com.openschool.training.store;
 
 import com.openschool.training.models.Pokemon;
-import com.openschool.training.models.PokemonsModel;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -13,16 +12,28 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GoodRepositoryImpl implements GoodRepository {
     private final Map<String, List<Long>> STORAGE_EXAMPLE = new ConcurrentHashMap<>();
     PokemonsRepository pokemonsRepository;
+    MethodEntityRepository methodEntityRepository;
 
-    public GoodRepositoryImpl(PokemonsRepository pokemonsRepository) {
+
+    public GoodRepositoryImpl(PokemonsRepository pokemonsRepository, MethodEntityRepository methodEntityRepository) {
         this.pokemonsRepository = pokemonsRepository;
+        this.methodEntityRepository = methodEntityRepository;
     }
+
 
     @Override
     public void add(String name, long time) {
-        List<Long> value = STORAGE_EXAMPLE.getOrDefault(name, new ArrayList<>());
-        value.add(time);
-        STORAGE_EXAMPLE.put(name, value);
+        MethodEntity methodEntity = methodEntityRepository.findByName(name);
+        if (methodEntity != null) {
+            List<Long> exTimes =methodEntity.getTimes();
+            exTimes.add(time);
+            methodEntity.setTimes(exTimes);
+        } else {
+            List<Long> exTimes = new ArrayList<>();
+            exTimes.add(time);
+            methodEntity = new MethodEntity(name, exTimes);
+        }
+        methodEntityRepository.save(methodEntity);
     }
 
     @Override

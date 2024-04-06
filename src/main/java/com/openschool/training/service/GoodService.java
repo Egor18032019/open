@@ -57,7 +57,7 @@ public class GoodService implements GoodServiceCommon {
         assert results != null;
         save(results);
         try {
-            Thread.sleep(11111);
+            Thread.sleep(1111);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
