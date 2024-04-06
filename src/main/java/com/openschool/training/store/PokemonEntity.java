@@ -16,8 +16,10 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PokemonEntity extends AbstractBaseEntity {
     @Column()
-    String name;
+    private String name;
     @Column()
-    String url;
+    private String url;
 
 }
+
+

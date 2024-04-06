@@ -28,7 +28,7 @@ public class PageController {
     }
 
     @GetMapping(value = EndPoint.pokemons)
-    public CompletableFuture<PokemonsModel> getAllPokemons(
+    public PokemonsModel getAllPokemons(
             @RequestParam int limit,
             @RequestParam(defaultValue = "0") int offset) {
 

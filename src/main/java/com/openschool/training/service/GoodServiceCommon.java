@@ -5,11 +5,10 @@ import com.openschool.training.models.PokemonsModel;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 public interface GoodServiceCommon {
 
-    CompletableFuture<PokemonsModel> getAllPokemons(int limit, int offset);
+    PokemonsModel getAllPokemons(int limit, int offset);
 
     Map<String, List<Long>> getMeExecutionTimeAllMethods();
 

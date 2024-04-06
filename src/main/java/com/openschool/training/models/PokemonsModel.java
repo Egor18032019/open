@@ -1,14 +1,14 @@
 package com.openschool.training.models;
 
 import lombok.*;
+import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Класс описывает полученного лимитированного списка покемонов
  */
-@Data
+@Component
 @Setter
 @Getter
 @NoArgsConstructor
@@ -17,5 +17,5 @@ public class PokemonsModel {
     int count;
     String next;
     String previous;
-    List<Pokemon> pokemonArrayList;
+    List<Pokemon> results;
 }

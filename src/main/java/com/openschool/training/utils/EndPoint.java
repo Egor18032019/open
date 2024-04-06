@@ -1,7 +1,7 @@
 package com.openschool.training.utils;
 
 public class EndPoint {
-    public static final String api = "/v1";
+    public static final String api = "/v2";
     public static final String support = "/support";
     public static final String pokemons = "/pokemons";
     public static final String execution = "/execution";

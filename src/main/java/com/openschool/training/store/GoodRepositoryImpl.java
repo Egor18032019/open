@@ -14,6 +14,9 @@ public class GoodRepositoryImpl implements GoodRepository {
     private final Map<String, List<Long>> STORAGE_EXAMPLE = new ConcurrentHashMap<>();
     PokemonsRepository pokemonsRepository;
 
+    public GoodRepositoryImpl(PokemonsRepository pokemonsRepository) {
+        this.pokemonsRepository = pokemonsRepository;
+    }
 
     @Override
     public void add(String name, long time) {
@@ -24,8 +27,9 @@ public class GoodRepositoryImpl implements GoodRepository {
 
     @Override
     public Pokemon getPokemonByName(String name) {
-        Pokemon pokemon = new Pokemon("bulbasaur", "https://pokeapi.co/api/v2/pokemon/1/");
-        return pokemon;
+        PokemonEntity pokemon = pokemonsRepository.findByName(name);
+        if (pokemon != null) return new Pokemon(pokemon.getName(), pokemon.getUrl());
+        return new Pokemon();
     }
 
     @Override

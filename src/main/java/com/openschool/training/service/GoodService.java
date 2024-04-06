@@ -9,7 +9,7 @@ import com.openschool.training.store.PokemonEntity;
 import com.openschool.training.store.PokemonsRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import org.springframework.scheduling.annotation.Async;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Service
+@Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GoodService implements GoodServiceCommon {
     GoodRepositoryImpl goodRepository;
@@ -35,38 +36,42 @@ public class GoodService implements GoodServiceCommon {
     public Pokemon getPokemonByName(String name) throws InterruptedException {
         long id = Thread.currentThread().getId();
         System.out.println("getPokemonByName . Thread id is:  " + id);
-        Thread.sleep(11111);
+        Thread.sleep(1111);
         Pokemon pokemon = goodRepository.getPokemonByName(name);
 
         return pokemon;
     }
 
     @Override
-    @Async
-    @TrackAsyncTime(className = "getAllPokemons")      //todo получать имя метода отдельно
-    public CompletableFuture<PokemonsModel> getAllPokemons(int limit, int offset) {
+    @TrackAsyncTime()
+    public PokemonsModel getAllPokemons(int limit, int offset) {
         long id = Thread.currentThread().getId();
         System.out.println("getAllPokemons. Thread id is:  " + id);
         if (offset > limit) offset = 0;
         if (limit < 1) limit = 1;
         RestTemplate restTemplate = new RestTemplate();
         //todo поправить
-        PokemonsModel results = restTemplate.getForObject("https://pokeapi.co/api/v2/pokemon?limit=" + limit + "&offset=" + offset, PokemonsModel.class);
-
-        return CompletableFuture.completedFuture(results);
+        String url = "https://pokeapi.co/api/v2/pokemon?limit=" + limit + "&offset=" + offset;
+        System.out.println(url);
+        PokemonsModel results = restTemplate.getForObject(url, PokemonsModel.class);
+        assert results != null;
+        save(results);
+        try {
+            Thread.sleep(11111);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return results;
     }
 
-    public static void save(CompletableFuture<PokemonsModel> results) {
-        results.thenApplyAsync((result -> {
-            // Обработка результата
-            for (Pokemon point : result.getPokemonArrayList()) {
-                if (pokemonsRepository.findByName(point.getName()) != null) {
-                    pokemonsRepository.save(new PokemonEntity(point.getName(), point.getUrl()));
-                }
+    public static void save(PokemonsModel results) {
+        // Обработка результата
+        for (Pokemon point : results.getResults()) {
+            PokemonEntity old = pokemonsRepository.findByName(point.getName());
+            if (old == null) {
+                pokemonsRepository.save(new PokemonEntity(point.getName(), point.getUrl()));
             }
-            return result;
-        }));
-
+        }
     }
 
     @Override
