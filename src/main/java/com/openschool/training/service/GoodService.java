@@ -2,9 +2,7 @@ package com.openschool.training.service;
 
 import com.openschool.training.annotation.TrackAsyncTime;
 import com.openschool.training.annotation.TrackTime;
-import com.openschool.training.models.MethodsWhitTimes;
-import com.openschool.training.models.Pokemon;
-import com.openschool.training.models.PokemonsModel;
+import com.openschool.training.models.*;
 import com.openschool.training.store.GoodRepositoryImpl;
 import com.openschool.training.store.MethodEntity;
 import com.openschool.training.store.PokemonEntity;
@@ -14,10 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.DoubleSummaryStatistics;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Slf4j
@@ -73,45 +70,48 @@ public class GoodService implements GoodServiceCommon {
     }
 
     @Override
-    public MethodsWhitTimes getMeExecutionTimeAllMethods() {
-
+    public MethodAndTimesList getMeExecutionTimeAllMethods() {
         List<MethodEntity> storage = goodRepository.getAllMethodsTimes();
-        MethodsWhitTimes methodsWhitTimes = new MethodsWhitTimes(storage);
+        List<MethodAndTimes> result = storage.stream().map(o->{
+            return new MethodAndTimes(o.getName(),o.getTimes());
+        }).toList();
+        MethodAndTimesList methodsWhitTimes = new MethodAndTimesList(result);
         return methodsWhitTimes;
     }
 
     @Override
-    public Map<String, Double> getAllMethodsAverageTime() {
+    public MethodWhitAverageTimeList getAllMethodsAverageTime() {
         List<MethodEntity> storage = goodRepository.getAllMethodsTimes();
-        Map<String, Double> storageAveragesTime = new HashMap<>();
+        List<MethodWhitAverageTime> result = new ArrayList<>();
         for (MethodEntity entry : storage) {
-            String key = entry.getName();
-            List<Long> value = entry.getTimes();
-            System.out.println("Key: " + key + ", Value: " + value);
-            storageAveragesTime.put(key, getAverage(value));
+            String name = entry.getName();
+            Double average = getAverage(entry.getTimes());
+            MethodWhitAverageTime methodsWhitTimes = new MethodWhitAverageTime(name,average);
+            result.add(methodsWhitTimes);
         }
-        return storageAveragesTime;
+        MethodWhitAverageTimeList answer = new MethodWhitAverageTimeList(result);
+        return answer;
     }
 
     public static double getAverage(List<Long> numbers) {
         // Используем метод stream() для преобразования списка в поток
         DoubleSummaryStatistics stats = numbers.stream().mapToDouble(num -> num).summaryStatistics();
-
         // Возвращаем среднее значение
         return stats.getAverage();
     }
 
     @Override
-    public Map<String, Long> getAllMethodsTotalExecutionTime() {
+    public MethodAndTotalTimesList getAllMethodsTotalExecutionTime() {
         List<MethodEntity> storage = goodRepository.getAllMethodsTimes();
-        Map<String, Long> storageTotalTime = new HashMap<>();
+        List<MethodAndTotalTime> result= new ArrayList<>();
         for (MethodEntity entry : storage) {
-            String key = entry.getName();
-            List<Long> value = entry.getTimes();
-            System.out.println("Key: " + key + ", Value: " + value);
-            storageTotalTime.put(key, getTotal(value));
+            String name = entry.getName();
+            Long total = getTotal(entry.getTimes());
+            MethodAndTotalTime methodsWhitTimes = new MethodAndTotalTime(name,total);
+            result.add(methodsWhitTimes);
         }
-        return storageTotalTime;
+        MethodAndTotalTimesList answer = new MethodAndTotalTimesList(result);
+        return answer;
     }
 
     public static Long getTotal(List<Long> numbers) {
@@ -119,7 +119,6 @@ public class GoodService implements GoodServiceCommon {
         for (Long value : numbers) {
             totalSum += value;
         }
-
         return totalSum;
     }
 }

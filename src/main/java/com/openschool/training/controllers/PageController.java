@@ -1,18 +1,12 @@
 package com.openschool.training.controllers;
 
-import com.openschool.training.models.MethodsWhitTimes;
-import com.openschool.training.models.Pokemon;
-import com.openschool.training.models.PokemonsModel;
+import com.openschool.training.models.*;
 import com.openschool.training.service.GoodService;
-import com.openschool.training.store.MethodEntity;
 import com.openschool.training.utils.EndPoint;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping(value = EndPoint.api)
@@ -38,22 +32,22 @@ public class PageController {
 
     /**
      * метод для получение всех методов и списка того за сколько медот выполнился
-      * @return
+      * @return MethodsWhitTimes
      */
     @GetMapping(value = EndPoint.execution)
-    public MethodsWhitTimes getMeExecutionTimeAllMethods() {
+    public MethodAndTimesList getMeExecutionTimeAllMethods() {
 
         return goodService.getMeExecutionTimeAllMethods();
     }
 
     @GetMapping(value = EndPoint.average)
-    public Map<String, Double> getAllMethodsAverageExecutionTime() {
+    public MethodWhitAverageTimeList getAllMethodsAverageExecutionTime() {
 
         return goodService.getAllMethodsAverageTime();
     }
 
     @GetMapping(value = EndPoint.total)
-    public Map<String, Long> getAllMethodsTotalExecutionTime() {
+    public MethodAndTotalTimesList getAllMethodsTotalExecutionTime() {
 
         return goodService.getAllMethodsTotalExecutionTime();
     }
