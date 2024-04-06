@@ -45,8 +45,8 @@ public class GoodRepositoryImpl implements GoodRepository {
         return methodEntityRepository.findAll();
     }
     @Override
+    @Transactional
     public void saveNewPokemons(PokemonEntity pokemonEntity) {
-        System.out.println(pokemonEntity.getName());
         pokemonsRepository.save(pokemonEntity);
     }
 }

@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PokemonsModel {
+public class PokemonsResponse {
     int count;
     String next;
     String previous;

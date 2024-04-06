@@ -32,7 +32,6 @@ public class PreTrackAsyncTime {
     @Around(value = "asyncRunnerPointcut()")
     @Transactional
     public Object asyncRunner(ProceedingJoinPoint joinPoint) {
-        System.out.println("перехват !!");
         try {
             return CompletableFuture.supplyAsync(() -> {
                 try {
@@ -50,8 +49,9 @@ public class PreTrackAsyncTime {
     }
 
     protected Object trackTime(ProceedingJoinPoint joinPoint) throws Throwable {
-
-        long startTime = System.currentTimeMillis();
+        long id = Thread.currentThread().getId();
+        System.out.println("getAllPokemons. Thread id is:  " + id);
+        long startTime = System.currentTimeMillis();  System.out.println("перехват !!");
 
         String methodName = joinPoint.getSignature().getName();
 
@@ -61,7 +61,7 @@ public class PreTrackAsyncTime {
 
         long endTime = System.currentTimeMillis();
 
-        log.info("Метод {} выполнился за {} мс ", methodName, endTime - startTime);
+        log.info("Метод {} в потоке {} выполнился за {} мс ", methodName,id, endTime - startTime);
         goodRepository.add(methodName, endTime - startTime);
         return o;
     }

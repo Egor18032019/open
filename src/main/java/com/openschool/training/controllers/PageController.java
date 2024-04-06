@@ -23,7 +23,7 @@ public class PageController {
     }
 
     @GetMapping(value = EndPoint.pokemons)
-    public PokemonsModel getAllPokemons(
+    public PokemonsResponse getAllPokemons(
             @RequestParam int limit,
             @RequestParam(defaultValue = "0") int offset) {
 
@@ -35,19 +35,19 @@ public class PageController {
       * @return MethodsWhitTimes
      */
     @GetMapping(value = EndPoint.execution)
-    public MethodAndTimesList getMeExecutionTimeAllMethods() {
+    public MethodAndTimesListResponse getMeExecutionTimeAllMethods() {
 
         return goodService.getMeExecutionTimeAllMethods();
     }
 
     @GetMapping(value = EndPoint.average)
-    public MethodWhitAverageTimeList getAllMethodsAverageExecutionTime() {
+    public MethodWhitAverageTimeListResponse getAllMethodsAverageExecutionTime() {
 
         return goodService.getAllMethodsAverageTime();
     }
 
     @GetMapping(value = EndPoint.total)
-    public MethodAndTotalTimesList getAllMethodsTotalExecutionTime() {
+    public MethodAndTotalTimesListResponse getAllMethodsTotalExecutionTime() {
 
         return goodService.getAllMethodsTotalExecutionTime();
     }

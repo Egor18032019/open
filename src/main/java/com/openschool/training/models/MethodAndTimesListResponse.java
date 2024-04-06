@@ -8,6 +8,6 @@ import java.util.List;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class MethodAndTotalTimesList {
-    List<MethodAndTotalTime> result;
+public class MethodAndTimesListResponse {
+    List<MethodAndTimes> result;
 }

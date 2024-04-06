@@ -30,7 +30,7 @@ public class GoodService implements GoodServiceCommon {
     @TrackTime(className = "getPokemonByName") //todo переделать получение имени
     public Pokemon getPokemonByName(String name) throws InterruptedException {
         long id = Thread.currentThread().getId();
-        System.out.println("getPokemonByName . Thread id is:  " + id);
+        log.info("Метод getPokemonByName в потоке {} запустился.", id);
         Thread.sleep(1111);
         Pokemon pokemon = goodRepository.getPokemonByName(name);
 
@@ -39,27 +39,24 @@ public class GoodService implements GoodServiceCommon {
 
     @Override
     @TrackAsyncTime()
-    public PokemonsModel getAllPokemons(int limit, int offset) {
+    public PokemonsResponse getAllPokemons(int limit, int offset) {
         long id = Thread.currentThread().getId();
-        System.out.println("getAllPokemons. Thread id is:  " + id);
+        log.info("Метод getAllPokemons в потоке {} запустился.", id);
         if (offset > limit) offset = 0;
         if (limit < 1) limit = 1;
         RestTemplate restTemplate = new RestTemplate();
-        //todo поправить
         String url = "https://pokeapi.co/api/v2/pokemon?limit=" + limit + "&offset=" + offset;
-        System.out.println(url);
-        PokemonsModel results = restTemplate.getForObject(url, PokemonsModel.class);
-        assert results != null;
-        save(results);
-        try {
-            Thread.sleep(1111);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+
+        PokemonsResponse results = restTemplate.getForObject(url, PokemonsResponse.class);
+        if (results == null) {
+            results = new PokemonsResponse();
+        } else {
+            save(results);
         }
         return results;
     }
 
-    public void save(PokemonsModel results) {
+    public void save(PokemonsResponse results) {
         // Обработка результата
         for (Pokemon point : results.getResults()) {
             Pokemon old = goodRepository.getPokemonByName(point.getName());
@@ -70,26 +67,26 @@ public class GoodService implements GoodServiceCommon {
     }
 
     @Override
-    public MethodAndTimesList getMeExecutionTimeAllMethods() {
+    public MethodAndTimesListResponse getMeExecutionTimeAllMethods() {
         List<MethodEntity> storage = goodRepository.getAllMethodsTimes();
-        List<MethodAndTimes> result = storage.stream().map(o->{
-            return new MethodAndTimes(o.getName(),o.getTimes());
+        List<MethodAndTimes> result = storage.stream().map(o -> {
+            return new MethodAndTimes(o.getName(), o.getTimes());
         }).toList();
-        MethodAndTimesList methodsWhitTimes = new MethodAndTimesList(result);
+        MethodAndTimesListResponse methodsWhitTimes = new MethodAndTimesListResponse(result);
         return methodsWhitTimes;
     }
 
     @Override
-    public MethodWhitAverageTimeList getAllMethodsAverageTime() {
+    public MethodWhitAverageTimeListResponse getAllMethodsAverageTime() {
         List<MethodEntity> storage = goodRepository.getAllMethodsTimes();
         List<MethodWhitAverageTime> result = new ArrayList<>();
         for (MethodEntity entry : storage) {
             String name = entry.getName();
             Double average = getAverage(entry.getTimes());
-            MethodWhitAverageTime methodsWhitTimes = new MethodWhitAverageTime(name,average);
+            MethodWhitAverageTime methodsWhitTimes = new MethodWhitAverageTime(name, average);
             result.add(methodsWhitTimes);
         }
-        MethodWhitAverageTimeList answer = new MethodWhitAverageTimeList(result);
+        MethodWhitAverageTimeListResponse answer = new MethodWhitAverageTimeListResponse(result);
         return answer;
     }
 
@@ -101,16 +98,16 @@ public class GoodService implements GoodServiceCommon {
     }
 
     @Override
-    public MethodAndTotalTimesList getAllMethodsTotalExecutionTime() {
+    public MethodAndTotalTimesListResponse getAllMethodsTotalExecutionTime() {
         List<MethodEntity> storage = goodRepository.getAllMethodsTimes();
-        List<MethodAndTotalTime> result= new ArrayList<>();
+        List<MethodAndTotalTime> result = new ArrayList<>();
         for (MethodEntity entry : storage) {
             String name = entry.getName();
             Long total = getTotal(entry.getTimes());
-            MethodAndTotalTime methodsWhitTimes = new MethodAndTotalTime(name,total);
+            MethodAndTotalTime methodsWhitTimes = new MethodAndTotalTime(name, total);
             result.add(methodsWhitTimes);
         }
-        MethodAndTotalTimesList answer = new MethodAndTotalTimesList(result);
+        MethodAndTotalTimesListResponse answer = new MethodAndTotalTimesListResponse(result);
         return answer;
     }
 

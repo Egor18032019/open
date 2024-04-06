@@ -4,12 +4,12 @@ import com.openschool.training.models.*;
 
 public interface GoodServiceCommon {
 
-    PokemonsModel getAllPokemons(int limit, int offset);
+    PokemonsResponse getAllPokemons(int limit, int offset);
 
-    MethodAndTimesList getMeExecutionTimeAllMethods();
+    MethodAndTimesListResponse getMeExecutionTimeAllMethods();
 
     Pokemon getPokemonByName(String name) throws InterruptedException;
 
-    MethodWhitAverageTimeList getAllMethodsAverageTime();
-    MethodAndTotalTimesList getAllMethodsTotalExecutionTime();
+    MethodWhitAverageTimeListResponse getAllMethodsAverageTime();
+    MethodAndTotalTimesListResponse getAllMethodsTotalExecutionTime();
 }

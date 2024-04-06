@@ -24,23 +24,17 @@ public class PreTrackTime {
     public void checkRulePointcut(TrackTime trackTime) {
     }
 
-
     @Before(value = "checkRulePointcut(trackTime)", argNames = "trackTime")
     public void before(TrackTime trackTime) {
         startTime = System.currentTimeMillis();
         System.out.println("before");
-
-
     }
 
     @After(value = "checkRulePointcut(trackTime)", argNames = "trackTime")
     public void after(TrackTime trackTime) {
-
         System.out.println("after");
-//        String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();
         String methodName = trackTime.className();
         long endTime = System.currentTimeMillis();
-        //todo получать имя метода отдельно
         goodRepository.add(methodName, endTime - startTime);
     }
 }

@@ -9,6 +9,6 @@ import java.util.List;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class MethodWhitAverageTimeList {
+public class MethodWhitAverageTimeListResponse {
     List<MethodWhitAverageTime> result;
 }
