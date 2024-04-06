@@ -1,6 +1,7 @@
 package com.openschool.training.aspect;
 
 import com.openschool.training.store.GoodRepositoryImpl;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -26,10 +27,10 @@ public class PreTrackAsyncTime {
 //    @Pointcut("@annotation(trackAsyncTime)")
     @Pointcut("@annotation(com.openschool.training.annotation.TrackAsyncTime)")
     public void asyncRunnerPointcut() {
-
     }
 
     @Around(value = "asyncRunnerPointcut()")
+    @Transactional
     public Object asyncRunner(ProceedingJoinPoint joinPoint) {
         System.out.println("перехват !!");
         try {

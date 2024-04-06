@@ -2,11 +2,12 @@ package com.openschool.training.service;
 
 import com.openschool.training.annotation.TrackAsyncTime;
 import com.openschool.training.annotation.TrackTime;
+import com.openschool.training.models.MethodsWhitTimes;
 import com.openschool.training.models.Pokemon;
 import com.openschool.training.models.PokemonsModel;
 import com.openschool.training.store.GoodRepositoryImpl;
+import com.openschool.training.store.MethodEntity;
 import com.openschool.training.store.PokemonEntity;
-import com.openschool.training.store.PokemonsRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -17,18 +18,15 @@ import java.util.DoubleSummaryStatistics;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GoodService implements GoodServiceCommon {
     GoodRepositoryImpl goodRepository;
-    static PokemonsRepository pokemonsRepository;
 
-    public GoodService(GoodRepositoryImpl goodRepository, PokemonsRepository pokemonsRepository) {
+    public GoodService(GoodRepositoryImpl goodRepository) {
         this.goodRepository = goodRepository;
-        GoodService.pokemonsRepository = pokemonsRepository;
     }
 
     @Override
@@ -64,30 +62,31 @@ public class GoodService implements GoodServiceCommon {
         return results;
     }
 
-    public static void save(PokemonsModel results) {
+    public void save(PokemonsModel results) {
         // Обработка результата
         for (Pokemon point : results.getResults()) {
-            PokemonEntity old = pokemonsRepository.findByName(point.getName());
+            Pokemon old = goodRepository.getPokemonByName(point.getName());
             if (old == null) {
-                pokemonsRepository.save(new PokemonEntity(point.getName(), point.getUrl()));
+                goodRepository.saveNewPokemons(new PokemonEntity(point.getName(), point.getUrl()));
             }
         }
     }
 
     @Override
-    public Map<String, List<Long>> getMeExecutionTimeAllMethods() {
-        long id = Thread.currentThread().getId();
-        System.out.println("getMeExecutionTimeAllMethods. Thread id is:  " + id);
-        return goodRepository.getStorage();
+    public MethodsWhitTimes getMeExecutionTimeAllMethods() {
+
+        List<MethodEntity> storage = goodRepository.getAllMethodsTimes();
+        MethodsWhitTimes methodsWhitTimes = new MethodsWhitTimes(storage);
+        return methodsWhitTimes;
     }
 
     @Override
     public Map<String, Double> getAllMethodsAverageTime() {
-        Map<String, List<Long>> storage = goodRepository.getStorage();
+        List<MethodEntity> storage = goodRepository.getAllMethodsTimes();
         Map<String, Double> storageAveragesTime = new HashMap<>();
-        for (Map.Entry<String, List<Long>> entry : storage.entrySet()) {
-            String key = entry.getKey();
-            List<Long> value = entry.getValue();
+        for (MethodEntity entry : storage) {
+            String key = entry.getName();
+            List<Long> value = entry.getTimes();
             System.out.println("Key: " + key + ", Value: " + value);
             storageAveragesTime.put(key, getAverage(value));
         }
@@ -102,12 +101,13 @@ public class GoodService implements GoodServiceCommon {
         return stats.getAverage();
     }
 
+    @Override
     public Map<String, Long> getAllMethodsTotalExecutionTime() {
-        Map<String, List<Long>> storage = goodRepository.getStorage();
+        List<MethodEntity> storage = goodRepository.getAllMethodsTimes();
         Map<String, Long> storageTotalTime = new HashMap<>();
-        for (Map.Entry<String, List<Long>> entry : storage.entrySet()) {
-            String key = entry.getKey();
-            List<Long> value = entry.getValue();
+        for (MethodEntity entry : storage) {
+            String key = entry.getName();
+            List<Long> value = entry.getTimes();
             System.out.println("Key: " + key + ", Value: " + value);
             storageTotalTime.put(key, getTotal(value));
         }
@@ -122,6 +122,4 @@ public class GoodService implements GoodServiceCommon {
 
         return totalSum;
     }
-
-
 }

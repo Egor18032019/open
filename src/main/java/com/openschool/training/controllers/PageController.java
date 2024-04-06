@@ -1,8 +1,10 @@
 package com.openschool.training.controllers;
 
+import com.openschool.training.models.MethodsWhitTimes;
 import com.openschool.training.models.Pokemon;
 import com.openschool.training.models.PokemonsModel;
 import com.openschool.training.service.GoodService;
+import com.openschool.training.store.MethodEntity;
 import com.openschool.training.utils.EndPoint;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -11,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping(value = EndPoint.api)
@@ -34,13 +35,13 @@ public class PageController {
 
         return goodService.getAllPokemons(limit, offset);
     }
-    /*
-Реализуйте REST API для получения статистики по времени выполнения методов
- (например, среднее время выполнения, общее время выполнения) для различных методов и их групп.
- */
 
+    /**
+     * метод для получение всех методов и списка того за сколько медот выполнился
+      * @return
+     */
     @GetMapping(value = EndPoint.execution)
-    public Map<String, List<Long>> getMeExecutionTimeAllMethods() {
+    public MethodsWhitTimes getMeExecutionTimeAllMethods() {
 
         return goodService.getMeExecutionTimeAllMethods();
     }
